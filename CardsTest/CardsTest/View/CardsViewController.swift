@@ -15,6 +15,7 @@ class CardsViewController: UIViewController {
 	@IBOutlet weak var feedbackLabel: UILabel!
 	@IBOutlet weak var upperFaceValueLabel: UILabel!
 	@IBOutlet weak var lowerFaceValueLabel: UILabel!
+	@IBOutlet weak var suitLabel: UILabel!
 	@IBOutlet weak var higherButton: UIButton!
 	@IBOutlet weak var lowerButton: UIButton!
 	@IBOutlet weak var playAgainButton: UIButton!
@@ -34,12 +35,16 @@ class CardsViewController: UIViewController {
 		cardView.layer.backgroundColor = UIColor.white.cgColor
 		cardView.layer.borderWidth = 1
 		cardView.layer.borderColor = UIColor.darkGray.cgColor
+		correctView.layer.backgroundColor = UIColor.white.cgColor
+		incorrectView.layer.backgroundColor = UIColor.white.cgColor
 		
 		let lowerFaceValueLabelFrame = lowerFaceValueLabel.frame
 		lowerFaceValueLabel.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
 		lowerFaceValueLabel.frame = lowerFaceValueLabelFrame
 		
-		reset()
+		higherButton.addTarget(self, action: #selector(buttonReleased), for: .touchUpInside)
+		lowerButton.addTarget(self, action: #selector(buttonReleased), for: .touchUpInside)
+		playAgainButton.addTarget(self, action: #selector(buttonReleased), for: .touchUpInside)
 	}
 	
 	private func populate() {
@@ -47,16 +52,58 @@ class CardsViewController: UIViewController {
 		viewModel.fetch()
 	}
 	
-	private func reset() {
+	@objc private func buttonReleased(sender: UIButton) {
+		let result: Bool
+		
+		if sender == playAgainButton {
+			startGame()
+		} else {
+			switch sender {
+			case higherButton:				result = viewModel.nextCardIsHigher
+			case lowerButton: 				result = viewModel.nextCardIsLower
+			default: result = false
+			}
+			showNextCard()
+			result ? showSuccess() : showFailure()
+		}
+	}
+	
+	private func showFailure() {
+		DispatchQueue.main.async {
+			self.feedbackLabel.text = "Wrong!"
+			self.correctView.isHidden = true
+			self.incorrectView.isHidden = false
+		}
+	}
+	
+	private func showNextCard() {
+		guard let nextCard = viewModel.nextCard else { return }
 		DispatchQueue.main.async {
 			self.incorrectView.isHidden = true
-			self.feedbackLabel.text = "Is the next card:"
+			self.upperFaceValueLabel.text = nextCard.faceValue
+			self.lowerFaceValueLabel.text = nextCard.faceValue
+			self.suitLabel.text = nextCard.suit
 		}
+	}
+	
+	private func showSuccess() {
+		DispatchQueue.main.async {
+			// there are some bits of text copy scattered throughout the app. It's only a short test. Normally they would be elsewhere. Localised one imagines
+			let question = "Is the next card:"
+			self.feedbackLabel.text = self.viewModel.currentCardIsFirstCard ? question : "Correct! \(question)"
+			self.correctView.isHidden = false
+		}
+	}
+	
+	private func startGame() {
+		viewModel.shuffle()
+		showNextCard()
+		showSuccess()
 	}
 }
 
 extension CardsViewController: ViewControllerDelegate {
 	func reload() {
-		reset()
+		startGame()
 	}
 }

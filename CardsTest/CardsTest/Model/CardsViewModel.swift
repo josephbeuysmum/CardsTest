@@ -6,7 +6,13 @@
 //  Copyright © 2019 Rich Text Format Ltd. All rights reserved.
 //
 
+fileprivate typealias CardRank = (current: Int, next: Int)
+
 class CardsViewModel {
+	var currentCardIsFirstCard: Bool {
+		return index < 2
+	}
+	
 	var delegate: ViewControllerDelegate?
 	
 	var hasCards: Bool {
@@ -17,6 +23,27 @@ class CardsViewModel {
 		let card = index < Consts.totalCards ? cards[index] : nil
 		index += 1
 		return card
+	}
+	
+	var nextCardIsHigher: Bool {
+		guard let ranks = nextCardRanks else { return false }
+		return ranks.current < ranks.next
+	}
+
+	var nextCardIsLower: Bool {
+		guard let ranks = nextCardRanks else { return false }
+		return ranks.current > ranks.next
+	}
+	
+	private var nextCardRanks: CardRank? {
+		let
+		nextCard = cards[index - 1],
+		nextNextCard = cards[index]
+		guard
+			let nextCardRank = cardRanks.firstIndex(of: nextCard.faceValue.lowercased()),
+			let nextNextCardRank = cardRanks.firstIndex(of: nextNextCard.faceValue.lowercased())
+			else { return nil }
+		return (current: nextCardRank, next: nextNextCardRank)
 	}
 	
 	private let
@@ -55,7 +82,6 @@ extension CardsViewModel: ApiResponseDelegate {
 				cards.append(PlayingCard(faceValue: value, suit: suit))
 			}
 		}
-		print(cards.count)
 		delegate?.reload()
 	}
 }

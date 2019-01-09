@@ -8,6 +8,7 @@
 
 struct Consts {
 	static let
+	// this probably needs adding to a list of permitted domains at some point
 	apiUrl = "https://cards.davidneal.io/api/cards",
 	jsonValue = "value",
 	jsonSuit = "suit",
