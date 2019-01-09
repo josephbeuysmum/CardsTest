@@ -19,6 +19,8 @@ class ApiService {
 		delegates = [:]
 	}
 	
+	// would normally test for internet connection at some point, skipping for this test
+	
 	func call(_ url: String, httpMethod: CallTypes, delegate: ApiResponseDelegate) -> Bool {
 		guard
 			delegates[url] == nil,

@@ -7,7 +7,11 @@
 //
 
 struct Consts {
-	static let apiUrl = "https://cards.davidneal.io/api/cards"
+	static let
+	apiUrl = "https://cards.davidneal.io/api/cards",
+	jsonValue = "value",
+	jsonSuit = "suit",
+	totalCards = 52
 	
 	init() { fatalError("Consts should not be inited") }
 }

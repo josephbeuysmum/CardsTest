@@ -11,3 +11,7 @@ typealias Jsonary = [[String: Any]]
 struct ApiResponse {
 	let url: String, result: Jsonary?
 }
+
+struct PlayingCard {
+	let faceValue: String, suit: String
+}
